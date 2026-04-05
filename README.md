@@ -30,13 +30,13 @@ Results show up in real-time as tests complete. You'll get a summary at the top 
 
 **Agentic reasoning:** Multi-step task execution (find top 3 frequent elements while showing all your reasoning), error handling (building an API client that retries with exponential backoff), system design (designing a real-time leaderboard at scale), analysis before code (implementing a TTL cache with analysis of data structures and trade-offs).
 
+<img width="1168" height="704" alt="image" src="https://github.com/user-attachments/assets/dabe3e8f-1c22-4e28-b0a3-fd9d1c195c27" />
+
 ## How it scores
 
 Each test has 3-4 regex checks that look for required concepts. All checks need to pass for a PASS. If some pass it's PARTIAL, if none pass it's FAIL.
 
 It's not perfect (doesn't actually execute the code) but it's pragmatic and works well for comparing model capabilities.
-
-<img width="1168" height="704" alt="image" src="https://github.com/user-attachments/assets/dabe3e8f-1c22-4e28-b0a3-fd9d1c195c27" />
 
 <img width="1170" height="612" alt="image" src="https://github.com/user-attachments/assets/177da6ba-32ee-44ee-9be1-ad972fa601ca" />
 
