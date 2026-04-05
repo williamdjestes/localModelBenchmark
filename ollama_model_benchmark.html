@@ -1,0 +1,295 @@
+
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0;}
+body { font-family: var(--font-mono); }
+.wrap { padding: 1.5rem 0; background-color: rgb(82, 72, 173);}
+h2 { font-size: 16px; font-weight: 500; color: var(--color-text-primary); margin-bottom: 4px; }
+.sub { font-size: 13px; color: var(--color-text-secondary); margin-bottom: 1.5rem; }
+.section { margin-bottom: 1.5rem; }
+.label { font-size: 12px; color: var(--color-text-secondary); margin-bottom: 6px; letter-spacing: 0.05em; text-transform: uppercase; }
+.model-list { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 8px; }
+.model-tag { display: flex; align-items: center; gap: 6px; background: var(--color-background-secondary); border: 0.5px solid var(--color-border-secondary); border-radius: var(--border-radius-md); padding: 5px 10px; font-size: 13px; color: var(--color-text-primary); }
+.model-tag button { background: none; border: none; cursor: pointer; color: var(--color-text-secondary); font-size: 14px; line-height: 1; padding: 0; }
+.model-tag button:hover { color: var(--color-text-danger); }
+.add-row { display: flex; gap: 8px; }
+.add-row input { flex: 1; font-family: var(--font-mono); font-size: 13px; padding: 6px 10px; border: 0.5px solid var(--color-border-secondary); border-radius: var(--border-radius-md); background: var(--color-background-primary); color: var(--color-text-primary); }
+.add-row button, .run-btn { border: 0.5px solid var(--color-border-secondary); border-radius: var(--border-radius-md); background: var(--color-background-primary); color: var(--color-text-primary); cursor: pointer; padding: 6px 14px; font-size: 13px; }
+.add-row button:hover, .run-btn:hover { background: var(--color-background-secondary); }
+.run-btn { padding: 8px 20px; font-size: 14px; font-weight: 500; }
+.run-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.tasks-grid { display: flex; flex-direction: column; gap: 6px; }
+.task-row { display: flex; align-items: flex-start; gap: 10px; padding: 8px 10px; border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-md); background: var(--color-background-secondary); }
+.task-row input[type=checkbox] { margin-top: 2px; flex-shrink: 0; }
+.task-name { font-size: 13px; font-weight: 500; color: var(--color-text-primary); }
+.task-desc { font-size: 12px; color: var(--color-text-secondary); margin-top: 2px; }
+.results { margin-top: 1.5rem; }
+.result-card { border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); overflow: hidden; margin-bottom: 1rem; background: var(--color-background-primary); }
+.result-header { display: flex; justify-content: space-between; align-items: center; padding: 10px 14px; background: var(--color-background-secondary); border-bottom: 0.5px solid var(--color-border-tertiary); }
+.result-model { font-size: 14px; font-weight: 500; color: var(--color-text-primary); }
+.result-score { font-size: 13px; color: var(--color-text-secondary); }
+.score-num { font-weight: 500; color: var(--color-text-primary); }
+.task-result { padding: 10px 14px; border-bottom: 0.5px solid var(--color-border-tertiary); }
+.task-result:last-child { border-bottom: none; }
+.task-result-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+.task-result-name { font-size: 12px; font-weight: 500; color: var(--color-text-secondary); text-transform: uppercase; letter-spacing: 0.04em; }
+.task-meta { display: flex; gap: 10px; font-size: 12px; }
+.badge { padding: 2px 8px; border-radius: 99px; font-size: 11px; font-weight: 500; }
+.badge-pass { background: #EAF3DE; color: #3B6D11; }
+.badge-fail { background: #FCEBEB; color: #A32D2D; }
+.badge-partial { background: #FAEEDA; color: #854F0B; }
+.time-badge { color: var(--color-text-secondary); }
+.tps-badge { color: var(--color-text-secondary); }
+.output-pre { font-family: var(--font-mono); font-size: 12px; color: var(--color-text-secondary); background: var(--color-background-secondary); border-radius: var(--border-radius-md); padding: 8px 10px; white-space: pre-wrap; word-break: break-all; max-height: 120px; overflow-y: auto; line-height: 1.5; }
+.progress-wrap { padding: 10px 14px; font-size: 13px; color: var(--color-text-secondary); font-style: italic; }
+.error-msg { font-size: 13px; color: var(--color-text-danger); padding: 10px 14px; }
+.bar-wrap { height: 4px; background: var(--color-background-secondary); border-radius: 2px; margin-top: 8px; overflow: hidden; }
+.bar { height: 4px; border-radius: 2px; background: #1D9E75; transition: width 0.4s; }
+</style>
+
+<div class="wrap">
+  <h2>Ollama model benchmark</h2>
+  <p class="sub">Tests selected models against coding tasks. Ollama must be running at localhost:11434.</p>
+
+  <div class="section">
+    <div class="label">Models to test</div>
+    <div class="model-list" id="model-list"></div>
+    <div class="add-row">
+      <input type="text" id="model-input" placeholder="e.g. qwen2.5-coder:7b-instruct-q8_0" />
+      <button onclick="addModel()">Add</button>
+      <button onclick="fetchModels()">Fetch from Ollama</button>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="label">Tasks</div>
+    <div class="tasks-grid" id="tasks-grid"></div>
+  </div>
+
+  <div style="display:flex; align-items:center; gap:14px; flex-wrap:wrap;">
+    <button class="run-btn" id="run-btn" onclick="runBenchmark()">Run benchmark</button>
+    <span id="status-msg" style="font-size:13px; color:var(--color-text-secondary);"></span>
+  </div>
+
+  <div class="results" id="results"></div>
+</div>
+
+<script>
+const TASKS = [
+  {
+    id: 'fizzbuzz',
+    name: 'FizzBuzz',
+    desc: 'Write a function that returns FizzBuzz output for 1-100',
+    prompt: 'Write a JavaScript function called fizzBuzz() that returns an array of strings for numbers 1-100: "Fizz" for multiples of 3, "Buzz" for multiples of 5, "FizzBuzz" for both. Return only the code, no explanation.',
+    checks: [r => /function\s+fizzBuzz/i.test(r), r => /fizzbuzz/i.test(r), r => /for|map|Array/i.test(r)]
+  },
+  {
+    id: 'reverse',
+    name: 'Reverse linked list',
+    desc: 'Implement iterative linked list reversal',
+    prompt: 'Write a JavaScript function reverseList(head) that reverses a singly linked list iteratively. The node structure is {val, next}. Return only the code, no explanation.',
+    checks: [r => /function\s+reverseList/i.test(r), r => /prev|previous/i.test(r), r => /while|for/i.test(r)]
+  },
+  {
+    id: 'debounce',
+    name: 'Debounce',
+    desc: 'Implement a debounce utility function',
+    prompt: 'Write a JavaScript debounce(fn, delay) function. It should return a new function that delays invoking fn until after delay ms have elapsed since the last call. Return only the code, no explanation.',
+    checks: [r => /function\s+debounce/i.test(r), r => /setTimeout/i.test(r), r => /clearTimeout/i.test(r)]
+  },
+  {
+    id: 'binary_search',
+    name: 'Binary search',
+    desc: 'Implement binary search on a sorted array',
+    prompt: 'Write a JavaScript function binarySearch(arr, target) that returns the index of target in a sorted array, or -1 if not found. Return only the code, no explanation.',
+    checks: [r => /function\s+binarySearch/i.test(r), r => /mid|middle/i.test(r), r => /left|low|start/i.test(r) && /right|high|end/i.test(r)]
+  },
+  {
+    id: 'promise_all',
+    name: 'Promise.all clone',
+    desc: 'Implement a custom Promise.all from scratch',
+    prompt: 'Write a JavaScript function myPromiseAll(promises) that behaves like Promise.all — resolves with an array of results when all promises resolve, rejects immediately if any rejects. Return only the code, no explanation.',
+    checks: [r => /function\s+myPromiseAll/i.test(r), r => /Promise/i.test(r), r => /reject/i.test(r) && /resolve/i.test(r)]
+  },
+  {
+    id: 'sql_query',
+    name: 'SQL query',
+    desc: 'Write a non-trivial SQL query with joins and aggregation',
+    prompt: 'Given tables: orders(id, customer_id, amount, created_at) and customers(id, name, country). Write a SQL query that returns the top 5 customers by total order amount in the last 30 days, showing customer name, country, order count, and total amount. Return only the SQL, no explanation.',
+    checks: [r => /JOIN/i.test(r), r => /GROUP BY/i.test(r), r => /SUM|COUNT/i.test(r) && /ORDER BY/i.test(r)]
+  },
+  {
+    id: 'react_hook',
+    name: 'Custom React hook',
+    desc: 'Write a useFetch hook with loading/error states',
+    prompt: 'Write a custom React hook called useFetch(url) that fetches data from a URL and returns {data, loading, error}. Handle loading state and errors. Return only the code, no explanation.',
+    checks: [r => /useFetch/i.test(r), r => /useState/i.test(r), r => /useEffect/i.test(r), r => /loading/i.test(r) && /error/i.test(r)]
+  },
+  {
+    id: 'bug_fix',
+    name: 'Bug fix',
+    desc: 'Identify and fix a subtle closure bug',
+    prompt: 'The following JavaScript code has a bug:\n\nfor (var i = 0; i < 5; i++) {\n  setTimeout(function() { console.log(i); }, i * 100);\n}\n\nFix it so it logs 0, 1, 2, 3, 4 in order. Return only the fixed code, no explanation.',
+    checks: [r => /let\s+i|const\s+i|\(i\)|IIFE|closure/i.test(r), r => /setTimeout/i.test(r)]
+  }
+];
+
+let models = [];
+let selectedTasks = new Set(TASKS.map(t => t.id));
+
+function renderModels() {
+  const list = document.getElementById('model-list');
+  list.innerHTML = models.map((m, i) => `
+    <div class="model-tag">
+      <span>${m}</span>
+      <button onclick="removeModel(${i})">x</button>
+    </div>`).join('');
+}
+
+function addModel() {
+  const inp = document.getElementById('model-input');
+  const val = inp.value.trim();
+  if (val && !models.includes(val)) { models.push(val); renderModels(); }
+  inp.value = '';
+}
+
+function removeModel(i) { models.splice(i, 1); renderModels(); }
+
+document.getElementById('model-input').addEventListener('keydown', e => { if (e.key === 'Enter') addModel(); });
+
+async function fetchModels() {
+  try {
+    const r = await fetch('http://localhost:11434/api/tags');
+    const d = await r.json();
+    const names = d.models.map(m => m.name);
+    document.getElementById('status-msg').textContent = `Found ${names.length} models. Click to add:`;
+    const list = document.getElementById('model-list');
+    list.innerHTML = names.map(n => `
+      <div class="model-tag" style="cursor:pointer" onclick="quickAdd('${n}', this)">
+        <span>${n}</span>
+      </div>`).join('');
+    models = [];
+  } catch(e) {
+    document.getElementById('status-msg').textContent = 'Could not reach Ollama at localhost:11434';
+  }
+}
+
+function quickAdd(name, el) {
+  if (!models.includes(name)) {
+    models.push(name);
+    el.style.border = '0.5px solid #1D9E75';
+    el.style.background = '#EAF3DE';
+  }
+}
+
+function renderTasks() {
+  const grid = document.getElementById('tasks-grid');
+  grid.innerHTML = TASKS.map(t => `
+    <div class="task-row">
+      <input type="checkbox" id="task-${t.id}" ${selectedTasks.has(t.id) ? 'checked' : ''} onchange="toggleTask('${t.id}', this.checked)" />
+      <div>
+        <div class="task-name">${t.name}</div>
+        <div class="task-desc">${t.desc}</div>
+      </div>
+    </div>`).join('');
+}
+
+function toggleTask(id, checked) {
+  if (checked) selectedTasks.add(id); else selectedTasks.delete(id);
+}
+
+async function callOllama(model, prompt) {
+  const start = performance.now();
+  const res = await fetch('http://localhost:11434/api/generate', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ model, prompt, stream: false, options: { temperature: 0.1 } })
+  });
+  const data = await res.json();
+  const elapsed = (performance.now() - start) / 1000;
+  const tokens = data.eval_count || 0;
+  const tps = tokens > 0 ? Math.round(tokens / elapsed) : null;
+  return { text: data.response || '', elapsed: elapsed.toFixed(1), tps, tokens };
+}
+
+function scoreResult(task, text) {
+  const passed = task.checks.filter(fn => fn(text)).length;
+  const total = task.checks.length;
+  if (passed === total) return 'pass';
+  if (passed > 0) return 'partial';
+  return 'fail';
+}
+
+async function runBenchmark() {
+  if (models.length === 0) { document.getElementById('status-msg').textContent = 'Add at least one model.'; return; }
+  const tasks = TASKS.filter(t => selectedTasks.has(t.id));
+  if (tasks.length === 0) { document.getElementById('status-msg').textContent = 'Select at least one task.'; return; }
+
+  const btn = document.getElementById('run-btn');
+  btn.disabled = true;
+  const resultsEl = document.getElementById('results');
+  resultsEl.innerHTML = '';
+
+  const total = models.length * tasks.length;
+  let done = 0;
+
+  for (const model of models) {
+    const cardId = 'card-' + model.replace(/[^a-z0-9]/gi, '_');
+    resultsEl.innerHTML += `<div class="result-card" id="${cardId}">
+      <div class="result-header">
+        <span class="result-model">${model}</span>
+        <span class="result-score" id="score-${cardId}">running...</span>
+      </div>
+      <div id="tasks-${cardId}"></div>
+    </div>`;
+
+    const taskContainer = document.getElementById('tasks-' + cardId);
+    let passCount = 0;
+    const taskResults = [];
+
+    for (const task of tasks) {
+      document.getElementById('status-msg').textContent = `${model} — ${task.name} (${done + 1}/${total})`;
+      taskContainer.innerHTML += `<div class="progress-wrap" id="prog-${cardId}-${task.id}">running ${task.name}...</div>`;
+
+      let result;
+      try {
+        result = await callOllama(model, task.prompt);
+        const score = scoreResult(task, result.text);
+        if (score === 'pass') passCount++;
+        taskResults.push({ task, result, score });
+
+        const prog = document.getElementById('prog-' + cardId + '-' + task.id);
+        const badgeClass = score === 'pass' ? 'badge-pass' : score === 'partial' ? 'badge-partial' : 'badge-fail';
+        const badgeText = score === 'pass' ? 'pass' : score === 'partial' ? 'partial' : 'fail';
+        const tpsStr = result.tps ? `${result.tps} t/s` : '';
+        prog.outerHTML = `<div class="task-result">
+          <div class="task-result-header">
+            <span class="task-result-name">${task.name}</span>
+            <div class="task-meta">
+              <span class="badge ${badgeClass}">${badgeText}</span>
+              <span class="time-badge">${result.elapsed}s</span>
+              ${tpsStr ? `<span class="tps-badge">${tpsStr}</span>` : ''}
+            </div>
+          </div>
+          <div class="output-pre">${result.text.slice(0, 600).replace(/</g,'&lt;').replace(/>/g,'&gt;')}${result.text.length > 600 ? '\n...' : ''}</div>
+        </div>`;
+      } catch(e) {
+        const prog = document.getElementById('prog-' + cardId + '-' + task.id);
+        prog.outerHTML = `<div class="error-msg">${task.name}: ${e.message}</div>`;
+      }
+
+      done++;
+      const pct = Math.round((passCount / tasks.length) * 100);
+      document.getElementById('score-' + cardId).innerHTML = `<span class="score-num">${passCount}/${tasks.length}</span> passed`;
+    }
+
+    const finalPct = Math.round((passCount / tasks.length) * 100);
+    document.getElementById('score-' + cardId).innerHTML = `<span class="score-num">${passCount}/${tasks.length}</span> passed &nbsp;·&nbsp; ${finalPct}%`;
+  }
+
+  document.getElementById('status-msg').textContent = 'Done.';
+  btn.disabled = false;
+}
+
+renderTasks();
+renderModels();
+</script>
