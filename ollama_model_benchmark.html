@@ -243,18 +243,17 @@
     }
 
     .info-btn {
-      background: none;
-      border: none;
+      background: rgba(93, 37, 197, 0.541);
+      border: 1px solid var(--border);
       color: var(--text-tertiary);
       cursor: pointer;
       font-size: 18px;
-      padding: 0;
+      padding: 20px;
       display: flex;
       align-items: center;
       justify-content: center;
-      width: 20px;
+      border-radius: 4px;
       height: 20px;
-      border-radius: 50%;
       transition: all 0.2s;
     }
 
@@ -602,9 +601,11 @@
 
   <div class="container">
     <header>
-      <h1>⚡ Ollama Benchmark</h1>
+      <h1>Ollama Benchmark</h1>
       <p class="subtitle">Comprehensive testing suite for local Ollama models. Ollama must be running at
         http://localhost:11434</p>
+        <div style="padding: 10px;"></div>
+        <button class="info-btn" onclick="showInfoModal()" title="View test explanations and settings">HELP</button>
     </header>
 
     <div class="section">
@@ -629,7 +630,6 @@
     <div class="section">
       <div class="section-header">
         <div class="section-title">Test Suite</div>
-        <button class="info-btn" onclick="showInfoModal()" title="View test explanations and settings">ℹ️</button>
       </div>
       <div id="tasks-container"></div>
     </div>
@@ -640,7 +640,7 @@
   <div class="modal" id="infoModal">
     <div class="modal-content">
       <div class="modal-header">
-        <h2>📖 Benchmark Information</h2>
+        <h2>Benchmark Information</h2>
         <button class="modal-close" onclick="closeInfoModal()">✕</button>
       </div>
       
@@ -676,16 +676,6 @@
           <li><strong>Success Rate:</strong> Percentage of tests that received full PASS score</li>
           <li><strong>Response Time:</strong> Wall-clock time from request to complete response</li>
           <li><strong>Tokens/sec:</strong> Model throughput (tokens generated per second)</li>
-        </ul>
-      </div>
-
-      <div class="modal-section">
-        <h3>Tips for Best Results</h3>
-        <ul>
-          <li>Select 1-3 models to compare directly</li>
-          <li>Start with both test suites to get a comprehensive view</li>
-          <li>Agentic reasoning tests are more demanding - they distinguish between good and excellent models</li>
-          <li>Response time includes network latency, not just model performance</li>
         </ul>
       </div>
     </div>
@@ -1056,7 +1046,7 @@ Return all 4 parts clearly labeled.`,
     </tr>`).join('');
 
       summarySec.innerHTML = `
-    <h3>📊 Summary by Model</h3>
+    <h3>Summary by Model</h3>
     <table class="summary-table">
       <thead>
         <tr>
@@ -1128,8 +1118,8 @@ Return all 4 parts clearly labeled.`,
               <span class="task-result-name">${task.name}</span>
               <div class="task-meta">
                 <span class="badge ${badgeClass}">${badgeText}</span>
-                <span class="time-badge">⏱️ ${result.elapsed}s</span>
-                ${tpsStr ? `<span class="tps-badge">⚡ ${tpsStr}</span>` : ''}
+                <span class="time-badge">${result.elapsed}s</span>
+                ${tpsStr ? `<span class="tps-badge">${tpsStr}</span>` : ''}
               </div>
             </div>
             <div class="output-pre">${result.text.slice(0, 600).replace(/</g, '&lt;').replace(/>/g, '&gt;')}${result.text.length > 600 ? '\n...' : ''}</div>
