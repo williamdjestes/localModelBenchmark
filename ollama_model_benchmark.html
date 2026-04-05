@@ -667,7 +667,7 @@
           <li><strong>Max Token Output:</strong> 500 tokens per response</li>
           <li><strong>API Endpoint:</strong> http://localhost:11434</li>
         </ul>
-        <p>These settings are optimized for consistent testing of core problem-solving ability.</p>
+        <p>These settings are optimized for consistent testing of core problem-solving ability. Some newer long-context tasks are intentionally heavier and may be more difficult under the 500-token output cap.</p>
       </div>
 
       <div class="modal-section">
@@ -875,6 +875,54 @@ Return all 4 parts clearly labeled.`,
           r => /class|function|get|set|clean.*expir|delete|filter|setInterval|Map/i.test(r)
         ]
       },
+      {
+        id: 'long_context_summary',
+        name: 'Long Context Summary',
+        desc: 'Summarize a large policy briefing in detail',
+        difficulty: 'Hard',
+        prompt: `You are given a long internal briefing about a multi-phase product launch. Read the full context carefully and produce a detailed executive summary that includes:
+- Key goals
+- Stakeholders and roles
+- Major risks and mitigations
+- Timelines and dependencies
+
+Briefing:
+The marketing team has prepared a 1,200-word launch document covering the new product roadmap, stakeholder responsibilities, campaign milestones, cross-team dependencies, regulatory compliance requirements, budget constraints, and three key risk scenarios. The product is a SaaS analytics platform targeting mid-market finance teams. The launch is split into alpha, beta, and general availability phases. Alpha must validate core reporting and alerting capabilities with 50 pilot accounts. Beta extends to 200 customers and introduces automated onboarding and advanced user permissions. General availability must support 5,000 active users and full SOC 2 readiness.
+
+Write a single executive summary in at least 2 detailed paragraphs. Return only the summary, no code and no explanation.`,
+        checks: [
+          r => /executive summary/i.test(r),
+          r => /stakeholders|roles|risks|mitigations/i.test(r),
+          r => /alpha|beta|general availability|GA/i.test(r),
+          r => /SOC 2|compliance|budget|timeline|dependencies/i.test(r)
+        ]
+      },
+      {
+        id: 'spec_review_and_risks',
+        name: 'Specification Review & Risks',
+        desc: 'Review a large product spec and list gaps',
+        difficulty: 'Hard',
+        prompt: `A 1,100-word product specification describes a new feature to let customers automate invoice approvals. The spec includes:
+- business context and goals
+- functional requirements for approval workflows
+- integrations with payment gateways and ERP systems
+- user roles and permissions
+- performance expectations: 10k invoices/day, sub-second approval decision latency
+- compliance controls for audit trails and data retention
+
+Your task:
+1. Identify at least five gaps or unclear areas in the specification
+2. For each gap, explain why it matters
+3. Propose a short mitigation or clarification for each
+
+Return the result as a numbered list with clear gap descriptions and fixes.`,
+        checks: [
+          r => /1\.|2\.|3\.|4\.|5\./.test(r),
+          r => /gap|unclear|missing|assumption/i.test(r),
+          r => /invoice|approval|workflow|payment gateway|ERP|audit trail/i.test(r),
+          r => /mitigation|clarify|explain|recommend/i.test(r)
+        ]
+      }
     ];
 
     let models = [];
