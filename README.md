@@ -1,0 +1,44 @@
+# Ollama Benchmark
+
+A testing suite for your local Ollama models. Just open the HTML file in your browser and start benchmarking.
+
+## What it does
+
+Tests your models against 16 different problems - 12 coding/algorithms problems and 4 agentic reasoning tasks.
+
+The coding tests cover the usual stuff: FizzBuzz, binary search, linked lists, React hooks, SQL, etc. The agentic tests are more interesting - they check if the model can think through problems multi-step, handle error cases, do system design, that kind of thing.
+
+Each test has a few validation checks (mostly regex patterns looking for key concepts), and you get back a pass/partial/fail score. Simple but effective for comparing models.
+
+## Getting started
+
+You need Ollama running locally:
+```
+ollama serve
+```
+
+Then just open `ollama_model_benchmark.html` in your browser.
+
+Add one or more models you want to test. You can type in a model name, or click "Fetch from Ollama" to see what you have installed. Then pick which tests to run (or just run them all), and hit the benchmark button.
+
+Results show up in real-time as tests complete. You'll get a summary at the top showing overall success rate, best performer, and metrics like response time and tokens per second.
+
+## The tests
+
+**Coding fundamentals:** FizzBuzz, reverse array, anagram check, reverse linked list, debounce, binary search, merge sorted arrays, SQL query, React hook, closure bug fix, Promise.all, LRU cache.
+
+**Agentic reasoning:** Multi-step task execution (find top 3 frequent elements while showing all your reasoning), error handling (building an API client that retries with exponential backoff), system design (designing a real-time leaderboard at scale), analysis before code (implementing a TTL cache with analysis of data structures and trade-offs).
+
+## How it scores
+
+Each test has 3-4 regex checks that look for required concepts. All checks need to pass for a PASS. If some pass it's PARTIAL, if none pass it's FAIL.
+
+It's not perfect (doesn't actually execute the code) but it's pragmatic and works well for comparing model capabilities.
+
+## Why I built this
+
+Claude generated an initial version that was actually pretty good. I wanted something simple to compare how different models handle coding tasks vs reasoning tasks. Turns out agentic tests are way better at distinguishing between okay models and actually good ones.
+
+## License
+
+MIT
