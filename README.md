@@ -36,10 +36,6 @@ Each test has 3-4 regex checks that look for required concepts. All checks need 
 
 It's not perfect (doesn't actually execute the code) but it's pragmatic and works well for comparing model capabilities.
 
-## Why I built this
-
-Claude generated an initial version that was actually pretty good. I wanted something simple to compare how different models handle coding tasks vs reasoning tasks. Turns out agentic tests are way better at distinguishing between okay models and actually good ones.
-
 ## License
 
 MIT
