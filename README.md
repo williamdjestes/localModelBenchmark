@@ -16,7 +16,7 @@ You need Ollama running locally:
 ```
 ollama serve
 ```
-Or start the desktop UI.
+(Or start the desktop UI)
 
 Then just open `ollama_model_benchmark.html` in your browser.
 
