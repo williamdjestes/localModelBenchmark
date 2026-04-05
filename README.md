@@ -1,14 +1,14 @@
 # Ollama Benchmark
 
-A testing suite for your local Ollama models. Just open the HTML file in your browser and start benchmarking.
+A testing suite for your local Ollama models. Just open the HTML file in your browser.
 
 ## What it does
 
-Tests your models against 16 different problems - 12 coding/algorithms problems and 4 agentic reasoning tasks.
+Tests your models against 16 relatively simple problems - 12 coding/algorithms problems and 4 agentic reasoning tasks.
 
-The coding tests cover the usual stuff: FizzBuzz, binary search, linked lists, React hooks, SQL, etc. The agentic tests are more interesting - they check if the model can think through problems multi-step, handle error cases, do system design, that kind of thing.
+The coding tests cover: FizzBuzz, binary search, linked lists, React hooks, SQL, etc. The agentic tests check if the model can think through problems multi-step, handle error cases, do system design, that kind of thing.
 
-Each test has a few validation checks (mostly regex patterns looking for key concepts), and you get back a pass/partial/fail score. Simple but effective for comparing models.
+Each test has a few validation checks (mostly regex patterns looking for key concepts), and you get back a pass/partial/fail score.
 
 ## Getting started
 
@@ -16,6 +16,7 @@ You need Ollama running locally:
 ```
 ollama serve
 ```
+Or start the desktop UI.
 
 Then just open `ollama_model_benchmark.html` in your browser.
 
