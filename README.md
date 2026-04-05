@@ -36,6 +36,11 @@ Each test has 3-4 regex checks that look for required concepts. All checks need 
 
 It's not perfect (doesn't actually execute the code) but it's pragmatic and works well for comparing model capabilities.
 
+<img width="1168" height="704" alt="image" src="https://github.com/user-attachments/assets/dabe3e8f-1c22-4e28-b0a3-fd9d1c195c27" />
+
+<img width="1170" height="612" alt="image" src="https://github.com/user-attachments/assets/177da6ba-32ee-44ee-9be1-ad972fa601ca" />
+
+
 ## License
 
 MIT
